@@ -11,21 +11,20 @@ app.post('/api', async (req, res) => {
 
     if (!pgn) return res.status(400).json({ erro: "PGN não enviado." });
 
-    // PROMPT TURBO: Focado em velocidade e nos 3 pontos principais
-    const prompt = `Você é o mestre Chessveja. Analise este PGN de forma ultra-objetiva.
-    Sua resposta DEVE seguir este formato:
+    // PROMPT ULTRA RÁPIDO
+    const prompt = `Analise este PGN de xadrez de forma técnica e curta.
+    Responda EXATAMENTE assim:
 
     GENIAIS: [número]
     CAPIVARAS: [número]
 
-    3 MOMENTOS CRÍTICOS:
-    [Liste apenas as 3 jogadas que decidiram a partida, explicando o erro e a melhor opção brevemente].
+    3 PIORES LANCES:
+    1. [lance]: [por que foi ruim] -> Sugestão: [melhor lance].
+    2. [lance]: [por que foi ruim] -> Sugestão: [melhor lance].
+    3. [lance]: [por que foi ruim] -> Sugestão: [melhor lance].
 
-    PLANOS ESTRATÉGICOS:
-    [Um parágrafo curto sobre o plano correto para ambos].
-
-    CONCLUSÃO:
-    [Uma frase de lição final].
+    PLANOS GERAIS:
+    [Plano das Brancas e das Pretas em uma frase].
 
     PGN: ${pgn}`;
 
@@ -39,8 +38,8 @@ app.post('/api', async (req, res) => {
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
                 messages: [{ role: "user", content: prompt }],
-                max_tokens: 500, // Limita o tamanho para ser mais rápido
-                temperature: 0.7
+                max_tokens: 400, // Menos texto = mais velocidade
+                temperature: 0.3 // Respostas mais lógicas e diretas
             })
         });
 
@@ -48,10 +47,10 @@ app.post('/api', async (req, res) => {
         if (data.choices) {
             res.json({ resultado: data.choices[0].message.content });
         } else {
-            res.status(500).json({ erro: "Erro na resposta da IA." });
+            res.status(500).json({ erro: "IA indisponível." });
         }
     } catch (error) {
-        res.status(500).json({ erro: "Erro de conexão." });
+        res.status(500).json({ erro: "Erro de rede." });
     }
 });
 
