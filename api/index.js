@@ -11,27 +11,23 @@ app.post('/api', async (req, res) => {
 
     if (!pgn) return res.status(400).json({ erro: "PGN não enviado." });
 
-    // SUPER PROMPT: Instruções detalhadas para análise de mestre
-    const prompt = `Você é o mestre de xadrez do Chessveja. Analise o PGN abaixo de forma profunda e didática.
-    Sua resposta DEVE seguir EXATAMENTE este formato de rótulos:
+    // PROMPT TURBO: Focado em velocidade e nos 3 pontos principais
+    const prompt = `Você é o mestre Chessveja. Analise este PGN de forma ultra-objetiva.
+    Sua resposta DEVE seguir este formato:
 
-    GENIAIS: [número total]
-    CAPIVARADAS: [número total de erros graves]
+    GENIAIS: [número]
+    CAPIVARAS: [número]
 
-    TEORIA E ABERTURA: 
-    [Identifique a abertura e comente brevemente a teoria por trás dela].
+    3 MOMENTOS CRÍTICOS:
+    [Liste apenas as 3 jogadas que decidiram a partida, explicando o erro e a melhor opção brevemente].
 
-    ANÁLISE LANCE A LANCE: 
-    [Destaque os momentos críticos. Explique por que certos lances foram bons ou ruins. Para erros, sugira SEMPRE a melhor jogada no formato: "O melhor seria (lance) porque..."].
+    PLANOS ESTRATÉGICOS:
+    [Um parágrafo curto sobre o plano correto para ambos].
 
-    PLANOS ESTRATÉGICOS: 
-    [Explique o que as brancas e pretas deveriam estar tentando fazer no meio-jogo].
+    CONCLUSÃO:
+    [Uma frase de lição final].
 
-    CONCLUSÃO: 
-    [Resumo da partida e uma lição para o jogador levar para a próxima].
-
-    PGN da partida:
-    ${pgn}`;
+    PGN: ${pgn}`;
 
     try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -41,8 +37,9 @@ app.post('/api', async (req, res) => {
                 'Authorization': `Bearer ${OPENAI_API_KEY}`
             },
             body: JSON.stringify({
-                model: "gpt-3.5-turbo", // Você pode usar gpt-4o se tiver saldo para uma análise ainda mais absurda
+                model: "gpt-3.5-turbo",
                 messages: [{ role: "user", content: prompt }],
+                max_tokens: 500, // Limita o tamanho para ser mais rápido
                 temperature: 0.7
             })
         });
