@@ -5,11 +5,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rota para analisar a partida com a chave da OpenAI protegida
-app.post('/api/analisar', async (req, res) => {
+// Rota corrigida: Agora é apenas '/api' para funcionar perfeitamente com a Vercel
+app.post('/api', async (req, res) => {
     const pgn = req.body.pgn;
     
-    // A chave secreta que ficará guardada na Vercel
+    // A Vercel vai puxar a sua chave do cofre automaticamente!
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
     if (!pgn) {
@@ -26,9 +26,6 @@ app.post('/api/analisar', async (req, res) => {
     ${pgn}`;
 
     try {
-        // Usando o fetch nativo do Node.js
-        const fetch = (await import('node-fetch')).default;
-        
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
